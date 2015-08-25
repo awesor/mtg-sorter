@@ -10,8 +10,14 @@ import re
 import os
 
 def downloadCard(setname, cardnumber, cardname):
-    if(not os.path.exists("E:\\Magic Card Images\\" + setname + "\\")):
-        os.mkdir("E:\\Magic Card Images\\" + setname + "\\")
+    #Operating System check, mac is Darwin...pc is...else!
+    if(os.uname().sysname == "Darwin"):
+        if(not os.path.exists("/Users/peter/Documents/Projects/MTG/Images/" + setname + "/")):
+            os.mkdir("/Users/peter/Documents/Projects/MTG/Images/" + setname + "/")
+    else:
+        if(not os.path.exists("E:\\Magic Card Images\\" + setname + "\\")):
+            os.mkdir("E:\\Magic Card Images\\" + setname + "\\")
+
     urllib.urlretrieve("http://magiccards.info/scans/en/"+setname+"/"+cardnumber+".jpg", "E:\\Magic Card Images\\" + setname + "\\" + cardnumber + ".jpg")
     return
 
@@ -29,7 +35,14 @@ def downloadSet(setname):
         downloadCard(setname, cardnumber, cardname)
     return
 
-for root, dirs, files in os.walk("E:\\Magic Card Images\\"):
+if(os.uname().sysname == "Darwin"):
+    path = "/Users/peter/Documents/Projects/MTG/Images/"
+    dirDelim = "/"
+else:
+    path = "E:\\Magic Card Images\\"
+    dirDelim = "\\"
+
+for root, dirs, files in os.walk(path):
     if len(dirs) > 0:
         for dir in dirs:
             data = urllib.urlopen("http://magiccards.info/"+dir+"/en.html")
@@ -38,7 +51,7 @@ for root, dirs, files in os.walk("E:\\Magic Card Images\\"):
             cardinfo = []
             for line in lines:
                 if state == 4:
-                    featureFile = "E:\\Magic Card Images\\" + dir + "\\" + cardinfo[0] + ".dat"
+                    featureFile = path + dir + dirDelim + cardinfo[0] + ".dat"
                     file = open(featureFile, 'w')
                     for item in cardinfo:
                         file.write(item + "\n")
